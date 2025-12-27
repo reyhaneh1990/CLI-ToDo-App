@@ -1,0 +1,91 @@
+<!doctype html>
+<!-- اعلام نوع سند: HTML5 -->
+
+<html lang="en">
+<!-- شروع سند HTML و تعیین زبان صفحه (انگلیسی) -->
+
+<head>
+  <!-- بخش تنظیمات و متادیتا -->
+
+  <meta charset="utf-8" />
+  <!-- تعیین encoding صفحه برای پشتیبانی از کاراکترها -->
+
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <!-- تنظیم نمایش ریسپانسیو برای موبایل و دسکتاپ -->
+
+  <title>ToDo (Localhost)</title>
+  <!-- عنوان صفحه که در تب مرورگر نمایش داده می‌شود -->
+
+  <link rel="stylesheet" href="style.css" />
+  <!-- اتصال فایل CSS برای استایل‌دهی صفحه -->
+</head>
+
+<body>
+<!-- بدنه اصلی صفحه -->
+
+<main class="wrap">
+  <!-- کانتینر اصلی صفحه (برای محدود کردن عرض و چینش) -->
+
+  <header class="head">
+    <!-- بخش هدر صفحه -->
+
+    <h1>ToDo</h1>
+    <!-- عنوان اصلی برنامه -->
+
+    <p class="sub">Running on localhost — Go backend + simple frontend</p>
+    <!-- توضیح کوتاه زیر عنوان -->
+  </header>
+
+  <section class="card">
+    <!-- کارت اصلی که همه محتوای Todo داخل آن است -->
+
+    <form id="addForm" class="row">
+      <!-- فرم اضافه کردن تسک جدید -->
+
+      <input
+              id="titleInput"
+              type="text"
+              placeholder="Add a new task..."
+              autocomplete="off"
+      />
+      <!-- فیلد ورودی برای نوشتن عنوان تسک
+           autocomplete خاموش شده تا پیشنهاد مرورگر نیاید -->
+
+      <button type="submit">Add</button>
+      <!-- دکمه ارسال فرم برای افزودن تسک -->
+    </form>
+
+    <div class="toolbar">
+      <!-- نوار ابزار فیلترها -->
+
+      <button id="filterAll" class="chip active">All</button>
+      <!-- دکمه نمایش همه تسک‌ها (پیش‌فرض فعال) -->
+
+      <button id="filterOpen" class="chip">Open</button>
+      <!-- دکمه نمایش تسک‌های انجام‌نشده -->
+
+      <button id="filterDone" class="chip">Done</button>
+      <!-- دکمه نمایش تسک‌های انجام‌شده -->
+    </div>
+
+    <ul id="list" class="list"></ul>
+    <!-- لیست تسک‌ها
+         آیتم‌ها به صورت داینامیک با JavaScript ساخته می‌شوند -->
+
+    <div id="empty" class="empty hidden">
+      No tasks yet. Add your first one.
+    </div>
+    <!-- پیام زمانی که هیچ تسکی وجود ندارد
+         کلاس hidden باعث مخفی بودن اولیه می‌شود -->
+
+    <div id="error" class="error hidden"></div>
+    <!-- نمایش پیام خطا
+         در حالت عادی مخفی است -->
+  </section>
+</main>
+
+<script src="app.js"></script>
+<!-- اتصال فایل JavaScript که منطق Todo را مدیریت می‌کند -->
+
+</body>
+</html>

@@ -1,0 +1,276 @@
+/* اعمال box-sizing روی تمام المان‌ها
+   باعث می‌شود padding و border داخل width/height حساب شوند */
+* {
+    box-sizing: border-box;
+}
+
+/* استایل کلی بدنه صفحه */
+body {
+    margin: 0;
+    /* حذف margin پیش‌فرض مرورگر */
+
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+    /* فونت پیش‌فرض سیستم برای ظاهر مدرن */
+
+    background: #0b1220;
+    /* رنگ پس‌زمینه تیره (Dark Mode) */
+
+    color: #e8eefc;
+    /* رنگ پیش‌فرض متن */
+}
+
+/* کانتینر اصلی صفحه */
+.wrap {
+    max-width: 720px;
+    /* حداکثر عرض محتوا */
+
+    margin: 40px auto;
+    /* فاصله از بالا و وسط‌چین افقی */
+
+    padding: 0 16px;
+    /* فاصله داخلی چپ و راست */
+}
+
+/* عنوان اصلی در هدر */
+.head h1 {
+    margin: 0 0 6px;
+    /* فاصله پایین عنوان */
+
+    font-size: 34px;
+    /* اندازه بزرگ عنوان */
+}
+
+/* متن توضیحی زیر عنوان */
+.sub {
+    margin: 0;
+    /* حذف margin پیش‌فرض */
+
+    opacity: .8;
+    /* کمی کم‌رنگ‌تر برای متن ثانویه */
+}
+
+/* کارت اصلی که Todo داخل آن قرار دارد */
+.card {
+    margin-top: 18px;
+    /* فاصله از هدر */
+
+    background: rgba(255,255,255,.06);
+    /* پس‌زمینه نیمه‌شفاف */
+
+    border: 1px solid rgba(255,255,255,.10);
+    /* کادر ظریف */
+
+    border-radius: 16px;
+    /* گوشه‌های گرد */
+
+    padding: 16px;
+    /* فاصله داخلی */
+
+    backdrop-filter: blur(6px);
+    /* افکت شیشه‌ای (blur پشت کارت) */
+}
+
+/* ردیف فرم افزودن تسک */
+.row {
+    display: flex;
+    /* چیدمان افقی */
+
+    gap: 10px;
+    /* فاصله بین input و button */
+}
+
+/* استایل input نوشتن تسک */
+input {
+    flex: 1;
+    /* پر کردن کل فضای باقی‌مانده */
+
+    padding: 12px 12px;
+    /* فاصله داخلی */
+
+    border-radius: 12px;
+    /* گوشه‌های گرد */
+
+    border: 1px solid rgba(255,255,255,.12);
+    /* کادر ملایم */
+
+    background: rgba(0,0,0,.25);
+    /* پس‌زمینه تیره */
+
+    color: #e8eefc;
+    /* رنگ متن */
+
+    outline: none;
+    /* حذف خط آبی پیش‌فرض فوکوس */
+}
+
+/* وقتی input فوکوس می‌گیرد */
+input:focus {
+    border-color: rgba(255,255,255,.25);
+    /* کادر واضح‌تر */
+}
+
+/* استایل کلی دکمه‌ها */
+button {
+    padding: 12px 14px;
+    /* اندازه دکمه */
+
+    border-radius: 12px;
+    /* گوشه‌های گرد */
+
+    border: 1px solid rgba(255,255,255,.14);
+    /* کادر دکمه */
+
+    background: rgba(255,255,255,.10);
+    /* پس‌زمینه نیمه‌شفاف */
+
+    color: #e8eefc;
+    /* رنگ متن دکمه */
+
+    cursor: pointer;
+    /* تغییر نشانگر موس */
+}
+
+/* افکت هاور روی دکمه */
+button:hover {
+    background: rgba(255,255,255,.14);
+    /* روشن‌تر شدن پس‌زمینه */
+}
+
+/* نوار فیلترها (All / Open / Done) */
+.toolbar {
+    display: flex;
+    /* چیدمان افقی */
+
+    gap: 8px;
+    /* فاصله بین دکمه‌ها */
+
+    margin: 14px 0 6px;
+    /* فاصله بالا و پایین */
+}
+
+/* دکمه‌های فیلتر (Chip) */
+.chip {
+    padding: 8px 10px;
+    /* اندازه کوچک‌تر */
+
+    border-radius: 999px;
+    /* کاملاً گرد */
+
+    font-size: 13px;
+    /* فونت کوچک */
+
+    opacity: .85;
+    /* کمی کم‌رنگ */
+}
+
+/* فیلتر فعال */
+.chip.active {
+    opacity: 1;
+    /* کاملاً واضح */
+
+    border-color: rgba(255,255,255,.30);
+    /* کادر پررنگ‌تر */
+}
+
+/* لیست تسک‌ها */
+.list {
+    list-style: none;
+    /* حذف bullet های ul */
+
+    padding: 0;
+    margin: 10px 0 0;
+
+    display: grid;
+    /* چیدمان عمودی با فاصله یکنواخت */
+
+    gap: 8px;
+}
+
+/* هر آیتم تسک */
+.item {
+    display: flex;
+    /* چیدمان افقی */
+
+    align-items: center;
+    /* وسط‌چین عمودی */
+
+    justify-content: space-between;
+    /* فاصله بین متن و دکمه‌ها */
+
+    padding: 12px;
+
+    border-radius: 12px;
+
+    border: 1px solid rgba(255,255,255,.10);
+
+    background: rgba(0,0,0,.22);
+}
+
+/* بخش چپ آیتم (چک‌باکس + متن) */
+.left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    /* برای جلوگیری از overflow متن */
+}
+
+/* عنوان تسک */
+.title {
+    white-space: nowrap;
+    /* جلوگیری از رفتن به خط بعد */
+
+    overflow: hidden;
+    /* مخفی کردن متن اضافی */
+
+    text-overflow: ellipsis;
+    /* نمایش ... برای متن بلند */
+}
+
+/* متادیتا (تاریخ) */
+.meta {
+    opacity: .7;
+    /* کم‌رنگ‌تر */
+
+    font-size: 12px;
+    /* فونت کوچک */
+}
+
+/* وقتی تسک انجام شده */
+.done .title {
+    text-decoration: line-through;
+    /* خط‌خورده شدن متن */
+
+    opacity: .75;
+    /* کم‌رنگ‌تر */
+}
+
+/* بخش دکمه‌های اکشن (مثل Delete) */
+.actions {
+    display: flex;
+    gap: 8px;
+}
+
+/* دکمه کوچک (Delete) */
+.small {
+    padding: 8px 10px;
+    font-size: 13px;
+}
+
+/* پیام لیست خالی و پیام خطا */
+.empty,
+.error {
+    margin-top: 12px;
+    opacity: .85;
+}
+
+/* رنگ متن خطا */
+.error {
+    color: #ffd2d2;
+}
+
+/* کلاس مخفی‌کننده */
+.hidden {
+    display: none;
+    /* المان کاملاً مخفی می‌شود */
+}
