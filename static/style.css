@@ -274,3 +274,42 @@ button:hover {
     display: none;
     /* المان کاملاً مخفی می‌شود */
 }
+/* هر آیتم تسک */
+.task-item {
+    direction: ltr;              /* چپ به راست */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+/* بخش چپ: checkbox + title */
+.task-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* عنوان تسک */
+.task-title {
+    text-align: left;
+    unicode-bidi: plaintext;     /* جلوگیری از قاطی شدن فارسی/انگلیسی */
+}
+
+/* وقتی تسک done است */
+.task-title.done {
+    text-decoration: line-through;
+    opacity: 0.6;
+}
+
+/* بخش راست: دکمه حذف */
+.task-right {
+    display: flex;
+    align-items: center;
+}
+
+/* دکمه حذف */
+.btn-delete {
+    cursor: pointer;
+}
+

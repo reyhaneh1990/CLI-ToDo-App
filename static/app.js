@@ -28,53 +28,241 @@ let tasks = [];
 // وضعیت فیلتر فعلی: all = همه، open = انجام‌نشده، done = انجام‌شده
 let filter = "all"; // all | open | done
 
-// تابع نمایش/پنهان‌سازی خطا در UI
+// =======================
+// UI Helpers
+// =======================
+
 function setError(msg) {
-    // اگر msg خالی بود یعنی خطا نداریم
+    if (!errorEl) return;
+
     if (!msg) {
-        // کلاس hidden را اضافه کن تا با CSS مخفی شود
         errorEl.classList.add("hidden");
-        // متن خطا را خالی کن
         errorEl.textContent = "";
     } else {
-        // اگر خطا داریم، hidden را بردار تا نمایش داده شود
         errorEl.classList.remove("hidden");
-        // متن خطا را ست کن
         errorEl.textContent = msg;
     }
 }
 
-// تابعی که ظاهر دکمه‌های فیلتر را تنظیم می‌کند (active)
-function setActiveFilter(btn) {
-    // اول active را از هر سه دکمه بردار
-    [filterAll, filterOpen, filterDone].forEach(b => b.classList.remove("active"));
-    // سپس فقط روی دکمه انتخاب‌شده active بگذار
-    btn.classList.add("active");
+function setEmptyVisible(isEmpty) {
+    if (!emptyEl) return;
+
+    if (isEmpty) emptyEl.classList.remove("hidden");
+    else emptyEl.classList.add("hidden");
 }
 
-// گرفتن لیست تسک‌ها از بک‌اند (GET /api/tasks)
+function setActiveFilter(btn) {
+    [filterAll, filterOpen, filterDone].forEach((b) => {
+        if (b) b.classList.remove("active");
+    });
+    if (btn) btn.classList.add("active");
+}
+
+// جلوگیری از XSS: متن را فقط به صورت textContent ست می‌کنیم
+function el(tag, className, text) {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== undefined) node.textContent = text;
+    return node;
+}
+
+// =======================
+// API
+// =======================
+
 async function apiGetTasks() {
-    // ارسال درخواست به سرور
     const res = await fetch("/api/tasks");
-    // اگر پاسخ ok نبود یعنی خطا
     if (!res.ok) throw new Error("Failed to load tasks");
-    // تبدیل پاسخ به JSON و برگرداندن آن
     return await res.json();
 }
 
-// افزودن تسک جدید به بک‌اند (POST /api/tasks)
 async function apiAddTask(title) {
-    // ارسال درخواست POST با بدنه JSON
     const res = await fetch("/api/tasks", {
-        method: "POST", // نوع درخواست
-        headers: {"Content-Type": "application/json"}, // اعلام اینکه JSON می‌فرستیم
-        body: JSON.stringify({ title }) // تبدیل آبجکت به JSON (فیلد title)
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title }),
     });
 
-    // خواندن بدنه پاسخ (معمولاً یک Task یا یک خطا)
     const data = await res.json();
-
-    // اگر ok نبود، خطا را از data.error بگیر یا متن پیش‌فرض بده
     if (!res.ok) throw new Error(data?.error || "Failed to add task");
+    return data;
+}
 
-// اگر موفق بود، تسک ساخ
+async function apiPatchTaskDone(id, done) {
+    const res = await fetch(`/api/tasks/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ done }),
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data?.error || "Failed to update task");
+    return data;
+}
+
+async function apiDeleteTask(id) {
+    const res = await fetch(`/api/tasks/${id}`, { method: "DELETE" });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data?.error || "Failed to delete task");
+    return data;
+}
+
+// =======================
+// Render
+// =======================
+
+function getFilteredTasks() {
+    if (filter === "open") return tasks.filter((t) => !t.done);
+    if (filter === "done") return tasks.filter((t) => t.done);
+    return tasks;
+}
+
+function render() {
+    if (!listEl) return;
+
+    // پاک کردن لیست قبلی
+    listEl.innerHTML = "";
+
+    const filtered = getFilteredTasks();
+
+    // نمایش حالت خالی
+    setEmptyVisible(filtered.length === 0);
+
+    filtered.forEach((t) => {
+        const li = el("li", "task-item");
+
+        // بخش چپ: checkbox + title
+        const left = el("div", "task-left");
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.checked = !!t.done;
+
+        const title = el("span", "task-title", t.title);
+        if (t.done) title.classList.add("done");
+
+        // وقتی تیک می‌خورد => PATCH
+        checkbox.addEventListener("change", async () => {
+            try {
+                setError("");
+                const updated = await apiPatchTaskDone(t.id, checkbox.checked);
+
+                // آپدیت در آرایه
+                const idx = tasks.findIndex((x) => x.id === updated.id);
+                if (idx !== -1) tasks[idx] = updated;
+
+                render();
+            } catch (err) {
+                // برگشت به حالت قبل
+                checkbox.checked = !!t.done;
+                setError(err?.message || "Update failed");
+            }
+        });
+
+        left.appendChild(checkbox);
+        left.appendChild(title);
+
+        // بخش راست: دکمه حذف
+        const right = el("div", "task-right");
+
+        const delBtn = el("button", "btn-delete", "Delete");
+        delBtn.addEventListener("click", async () => {
+            try {
+                setError("");
+                await apiDeleteTask(t.id);
+
+                // حذف از آرایه
+                tasks = tasks.filter((x) => x.id !== t.id);
+                render();
+            } catch (err) {
+                setError(err?.message || "Delete failed");
+            }
+        });
+
+        right.appendChild(delBtn);
+
+        li.appendChild(left);
+        li.appendChild(right);
+
+        listEl.appendChild(li);
+    });
+}
+
+// =======================
+// Init & Events
+// =======================
+
+async function loadAndRender() {
+    try {
+        setError("");
+        tasks = await apiGetTasks();
+
+        // جدیدها بالا (اختیاری)
+        tasks.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+        render();
+    } catch (err) {
+        setError(err?.message || "Failed to load tasks");
+        setEmptyVisible(true);
+    }
+}
+
+if (addForm) {
+    addForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        try {
+            setError("");
+
+            const title = (titleInput?.value || "").trim();
+            if (!title) {
+                setError("Title is required");
+                return;
+            }
+
+            const newTask = await apiAddTask(title);
+
+            // افزودن به ابتدای لیست
+            tasks.unshift(newTask);
+
+            // خالی کردن input
+            if (titleInput) titleInput.value = "";
+
+            render();
+        } catch (err) {
+            setError(err?.message || "Add failed");
+        }
+    });
+}
+
+// فیلترها
+if (filterAll) {
+    filterAll.addEventListener("click", () => {
+        filter = "all";
+        setActiveFilter(filterAll);
+        render();
+    });
+}
+
+if (filterOpen) {
+    filterOpen.addEventListener("click", () => {
+        filter = "open";
+        setActiveFilter(filterOpen);
+        render();
+    });
+}
+
+if (filterDone) {
+    filterDone.addEventListener("click", () => {
+        filter = "done";
+        setActiveFilter(filterDone);
+        render();
+    });
+}
+
+// اجرای اولیه
+document.addEventListener("DOMContentLoaded", () => {
+    // فیلتر پیش‌فرض
+    setActiveFilter(filterAll);
+    loadAndRender();
+});
